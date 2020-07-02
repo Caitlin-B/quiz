@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"flag"
 	"fmt"
 	"os"
@@ -29,11 +30,43 @@ func main() {
 	if err!= nil {
 		exit("Failed to parse the provided CSV file.")
 	}
-	fmt.Println(lines)
-	
+
+	//parse into structs
+	problems := parseLines(lines)
+
+	//get users input and check correct
+
+	correct := 0
+	for i, p := range problems {
+		fmt.Printf("Problem #%d:  %s = \n", i+1, p.q)
+		var answer string
+		fmt.Scanf("%s\n", &answer) //read user input
+		if answer == p.a {
+			correct++
+		}
+	}
+
+	fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
+
 }
 
+func parseLines(lines [][]string) []problem {
+	ret := make([]problem, len(lines))
+	for i , line := range lines {
+		ret[i] = problem{
+			q: line[0],
+			a: line[1],
+		}
+	}
+	return ret
+}
 
+type problem struct {
+	q string
+	a string
+}
+
+//error handling fct
 func exit(msg string) {
 	fmt.Println(msg)
 	os.Exit(1)
